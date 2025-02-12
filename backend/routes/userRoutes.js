@@ -1,0 +1,42 @@
+const bodyParser = require('body-parser');
+let express = require('express');
+let router = express.Router();
+
+const User = require('../models/UserSchema');
+router.use(express.json());
+
+router.use(bodyParser.json({ limit: "50mb" }));
+router.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+
+router.post("/", async (req, res) => {
+    try {
+
+        const { name, email } = req.body;
+
+        const addUser = await User.create({ name, email });
+        res.json({ status: "success", data: addUser });
+
+    } catch (err) {
+        res.json({ status: "Error", data: err })
+    }
+});
+
+router.get("/", async (req, res) => {
+    try {
+        const allUser = await User.find();
+        res.json({ status: "success", data: allUser })
+    } catch (err) {
+        res.json({ status: "Error", data: err })
+    }
+});
+
+router.delete("/:id", async (req, res) => {
+    try {
+        const deletedUser = await User.findByIdAndDelete(req.params.id);
+        res.json({ status: "success", data: deletedUser })
+    } catch (err) {
+        res.json({ status: "Error", data: err })
+    }
+});
+
+module.exports = router;
