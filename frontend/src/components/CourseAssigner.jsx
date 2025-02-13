@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function CourseAssigner() {
     const [user, setUser] = useState({ name: "", email: "" });
@@ -10,12 +11,15 @@ function CourseAssigner() {
     const [courseData, setCourseData] = useState([]);
     const [userCourseData, setUserCourseData] = useState([]);
 
+    const [courseDetail, setCourseDetail] = useState({});
+
     function fetchUserCourse(e) {
         const userId = e.target.value;
         if (userId) {
             axios.get(import.meta.env.VITE_BASE_URL + "/course-assign/" + userId)
                 .then((res) => {
                     setUserCourseData(res.data.data);
+                    console.log(res.data.data);
                 });
         } else {
             setUserCourseData([]);
@@ -91,7 +95,16 @@ function CourseAssigner() {
                     courseId: ""
                 });
             });
-    }
+    };
+
+    function handleView(id) {
+        // alert(id)
+        axios.get(import.meta.env.VITE_BASE_URL + "/course/" + id)
+            .then((res) => {
+                // console.log(res.data.data);
+                setCourseDetail(res.data.data);
+            });
+    };
 
     return (
         <>
@@ -113,8 +126,17 @@ function CourseAssigner() {
                             <button className="btn btn-success" data-bs-toggle="modal" data-bs-target="#courseModal">Add Course</button>
                             <button className="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#assign-courseModal">Assign Course</button>
                             {/* Add the two buttons here */}
-                            <button className="btn btn-warning">Edit Users</button>
-                            <button className="btn btn-info">Edit Courses</button>
+                            <div className="text-center" style={{ marginTop: "20rem" }}>
+
+                                <i className="fa-solid fa-gear fa-xl me-4"></i>
+
+                                <Link to={"/users"}>
+                                    <button className="btn btn-warning me-2">Users</button>
+                                </Link>
+                                <Link to={"/courses"}>
+                                    <button className="btn btn-info">Courses</button>
+                                </Link>
+                            </div>
                         </div>
                     </div>
 
@@ -123,13 +145,19 @@ function CourseAssigner() {
                         <div className="row row-cols-1 row-cols-md-3 g-4">
                             {userCourseData.map((eachData) => (
                                 <div key={eachData._id} className="col">
-                                    <div className="card h-100 shadow-sm">
-                                        <div className="card-body">
+                                    <div className="card h-100 shadow-sm d-flex flex-column">
+                                        <div className="card-body flex-grow-1 d-flex flex-column">
                                             <h5 className="card-title">{eachData.courseId.name}</h5>
                                             <p className="card-text">{eachData.courseId.description}</p>
-                                            <div className="d-flex justify-content-between align-items-center">
-                                                <a href="#" className="btn btn-outline-primary btn-sm">View</a>
-                                                {/* <a href="#" className="btn btn-outline-secondary btn-sm">Edit</a> */}
+                                            <div className="mt-auto d-flex justify-content-start">
+                                                <button
+                                                    onClick={() => handleView(eachData.courseId._id)}
+                                                    className="btn btn-outline-primary btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#courseDetailModalLabel"
+                                                >
+                                                    View
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -137,6 +165,7 @@ function CourseAssigner() {
                             ))}
                         </div>
                     </div>
+
 
                     {/* Modals Section */}
                     <div>
@@ -172,8 +201,8 @@ function CourseAssigner() {
                                     <div className="modal-body">
                                         <input onChange={courseHandleChange} id="name" value={course.name} className="form-control mb-3" type="text" placeholder="Title" />
                                         <input onChange={courseHandleChange} id="description" value={course.description} className="form-control mb-3" type="text" placeholder="Description" />
-                                        {/* <input onChange={courseHandleChange} id="duration" value={course.duration} className="form-control mb-3" type="text" placeholder="Duration" /> */}
-                                        {/* <input onChange={courseHandleChange} id="fees" value={course.fees} className="form-control mb-3" type="text" placeholder="Fees (INR)" /> */}
+                                        <input onChange={courseHandleChange} id="duration" value={course.duration} className="form-control mb-3" type="text" placeholder="Duration" />
+                                        <input onChange={courseHandleChange} id="fees" value={course.fees} className="form-control mb-3" type="text" placeholder="Fees (INR)" />
                                     </div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -208,6 +237,29 @@ function CourseAssigner() {
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                         <button onClick={assignCourseHandleSubmit} type="button" className="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        {/* Course-Detail Modal */}
+                        <div class="modal fade" id="courseDetailModalLabel" tabindex="-1" aria-labelledby="courseDetailModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Course Details</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>Course Name:</strong> {courseDetail.name}</p>
+                                        <p><strong>Course Description:</strong> {courseDetail.description}</p>
+                                        <p><strong>Duration:</strong> {courseDetail.duration} Months</p>
+                                        <p><strong>Fees:</strong> ₹{courseDetail.fees}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary">Save changes</button>
                                     </div>
                                 </div>
                             </div>

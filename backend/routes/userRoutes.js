@@ -30,6 +30,27 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/:id", async (req, res) => {
+    try {
+        const singleUser = await User.findById(req.params.id);
+        res.json({ status: "success", data: singleUser })
+    } catch (err) {
+        res.json({ status: "Error", data: err })
+    }
+});
+
+router.put("/:id", async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const body = req.body;
+
+        const updatedUser = await User.findByIdAndUpdate(userId, body, { new: true });
+        res.json({ status: "success", data: updatedUser })
+    } catch (err) {
+        res.json({ status: "Error", data: err })
+    }
+});
+
 router.delete("/:id", async (req, res) => {
     try {
         const deletedUser = await User.findByIdAndDelete(req.params.id);
