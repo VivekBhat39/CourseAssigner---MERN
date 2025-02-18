@@ -28,7 +28,8 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
 
     try {
-        const userCourses = await CourseAssign.find();
+        const userCourses = await CourseAssign.find({});
+        // const userCourses = await CourseAssign.find({}).populate("courseId");
 
         res.json({ status: "success", data: userCourses })
     } catch (err) {

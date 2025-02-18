@@ -87,6 +87,7 @@ function CourseAssigner() {
 
     function assignCourseHandleSubmit(e) {
         e.preventDefault();
+        // axios.post("http://localhost:8080/course-assign", assignCourse)
         axios.post(import.meta.env.VITE_BASE_URL + "/course-assign", assignCourse)
             .then((res) => {
                 console.log(res.data.data);
@@ -259,7 +260,7 @@ function CourseAssigner() {
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary">Save changes</button>
+                                        {/* <button type="button" class="btn btn-primary">Save changes</button> */}
                                     </div>
                                 </div>
                             </div>
